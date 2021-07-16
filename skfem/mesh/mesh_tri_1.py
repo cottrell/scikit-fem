@@ -335,6 +335,56 @@ class MeshTri1(Mesh2D):
                 (X[1] >= 0) *
                 (1 - X[0] - X[1] >= 0)
             )
+            import pdb
+            pdb.set_trace()
             return np.array([ix[np.argmax(inside, axis=0)]]).flatten()
 
+        return finder
+
+    def element_finder_v2(self, mapping=None):
+        # this one aggress with original
+
+        if mapping is None:
+            mapping = self._mapping()
+
+        tree = cKDTree(np.mean(self.p[:, self.t], axis=1).T)
+
+        def finder(x, y):
+            ind = tree.query(np.array([x, y]).T, 5)[1]  # the 5 nearest neighbours
+            ix = ind.flatten()
+            X = mapping.invF(np.array([x, y])[:, None])
+            X = X[:, ix, :]  # this is what was done before, I think this is not needed, it is replicating rows for no reason
+            inside = (
+                (X[0] >= 0) *
+                (X[1] >= 0) *
+                (1 - X[0] - X[1] >= 0)
+            ) # inside.shape = (x.shape[0] * 5, x.shape[0])
+            out = np.argmax(inside, axis=0)
+            import pdb
+            pdb.set_trace()
+            return np.array([ix[out]]).flatten()
+        return finder
+
+    def element_finder_v3(self, mapping=None):
+        # this one *nearly* aggrees with original, edge conditions?
+
+        if mapping is None:
+            mapping = self._mapping()
+
+        tree = cKDTree(np.mean(self.p[:, self.t], axis=1).T)
+
+        def finder(x, y):
+            ind = tree.query(np.array([x, y]).T, 5)[1]  # the 5 nearest neighbours
+            ix = ind.flatten()
+            X = mapping.invF(np.array([x, y])[:, None])
+            inside = (
+                (X[0] >= 0) *
+                (X[1] >= 0) *
+                (1 - X[0] - X[1] >= 0)
+            )
+            # like this the ordering for multiple inside==True should be consistent, argmax takes leftmost
+            out = np.argmax(inside, axis=0)
+            import pdb
+            pdb.set_trace()
+            return out
         return finder
