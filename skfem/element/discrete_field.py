@@ -1,12 +1,9 @@
 from typing import NamedTuple, Optional
-
 import numpy as np
 from numpy import ndarray
 
-
 class DiscreteField(NamedTuple):
     """A function defined at the global quadrature points."""
-
     value: ndarray
     grad: Optional[ndarray] = None
     div: Optional[ndarray] = None
@@ -65,8 +62,7 @@ class DiscreteField(NamedTuple):
 
     def _split(self):
         """Split all components based on their first dimension."""
-        return [DiscreteField(*[f[i] for f in self if f is not None])
-                for i in range(self.value.shape[0])]
+        return [DiscreteField(*[f[i] for f in self if f is not None]) for i in range(self.value.shape[0])]
 
     def zeros_like(self) -> 'DiscreteField':
         """Return zero :class:`~skfem.element.DiscreteField` with same size."""
@@ -75,5 +71,4 @@ class DiscreteField(NamedTuple):
             if x is None:
                 return None
             return np.zeros_like(x)
-
         return DiscreteField(*[zero_or_none(field) for field in self])

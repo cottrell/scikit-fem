@@ -1,9 +1,9 @@
-from .element_tet_p0 import ElementTetP0  # noqa
-from .element_tet_p1 import ElementTetP1  # noqa
-from .element_tet_p2 import ElementTetP2  # noqa
-from .element_tet_rt0 import ElementTetRT0  # noqa
-from .element_tet_n0 import ElementTetN0  # noqa
-from .element_tet_mini import ElementTetMini  # noqa
-from .element_tet_cr import ElementTetCR  # noqa
-from .element_tet_dg import ElementTetDG  # noqa
-from .element_tet_ccr import ElementTetCCR # noqa
+from .element_tet_p0 import ElementTetP0
+from .element_tet_p1 import ElementTetP1
+from .element_tet_p2 import ElementTetP2
+from .element_tet_rt0 import ElementTetRT0
+from .element_tet_n0 import ElementTetN0
+from .element_tet_mini import ElementTetMini
+from .element_tet_cr import ElementTetCR
+from .element_tet_dg import ElementTetDG
+from .element_tet_ccr import ElementTetCCR

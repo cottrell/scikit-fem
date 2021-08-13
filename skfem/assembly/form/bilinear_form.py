@@ -1,15 +1,12 @@
 from typing import Optional, Tuple
 from threading import Thread
 from itertools import product
-
 import numpy as np
 from numpy import ndarray
 from scipy.sparse import csr_matrix
-
 from ..basis import Basis
 from .coo_data import COOData
 from .form import Form, FormExtraParams
-
 
 class BilinearForm(Form):
     """A bilinear form for finite element assembly.
@@ -52,28 +49,14 @@ class BilinearForm(Form):
 
     """
 
-    def _assemble(self,
-                  ubasis: Basis,
-                  vbasis: Optional[Basis] = None,
-                  **kwargs) -> Tuple[ndarray,
-                                     ndarray,
-                                     ndarray,
-                                     Tuple[int, int]]:
-
+    def _assemble(self, ubasis: Basis, vbasis: Optional[Basis]=None, **kwargs) -> Tuple[ndarray, ndarray, ndarray, Tuple[int, int]]:
         if vbasis is None:
             vbasis = ubasis
         elif ubasis.X.shape[1] != vbasis.X.shape[1]:
-            raise ValueError("Quadrature mismatch: trial and test functions "
-                             "should have same number of integration points.")
-
+            raise ValueError('Quadrature mismatch: trial and test functions should have same number of integration points.')
         nt = ubasis.nelems
         dx = ubasis.dx
-        wdict = FormExtraParams({
-            **ubasis.default_parameters(),
-            **self.dictify(kwargs),
-        })
-
-        # initialize COO data structures
+        wdict = FormExtraParams({**ubasis.default_parameters(), **self.dictify(kwargs)})
         sz = ubasis.Nbfun * vbasis.Nbfun * nt
         if self.nthreads > 0:
             data = np.zeros((ubasis.Nbfun, vbasis.Nbfun, nt), dtype=self.dtype)
@@ -81,46 +64,22 @@ class BilinearForm(Form):
             data = np.zeros(sz, dtype=self.dtype)
         rows = np.zeros(sz, dtype=np.int64)
         cols = np.zeros(sz, dtype=np.int64)
-
-        # loop over the indices of local stiffness matrix
         for j in range(ubasis.Nbfun):
             for i in range(vbasis.Nbfun):
-                ixs = slice(nt * (vbasis.Nbfun * j + i),
-                            nt * (vbasis.Nbfun * j + i + 1))
+                ixs = slice(nt * (vbasis.Nbfun * j + i), nt * (vbasis.Nbfun * j + i + 1))
                 rows[ixs] = vbasis.element_dofs[i]
                 cols[ixs] = ubasis.element_dofs[j]
                 if self.nthreads <= 0:
-                    data[ixs] = self._kernel(
-                        ubasis.basis[j],
-                        vbasis.basis[i],
-                        wdict,
-                        dx,
-                    )
-
+                    data[ixs] = self._kernel(ubasis.basis[j], vbasis.basis[i], wdict, dx)
         if self.nthreads > 0:
-            # create indices for linear loop over local stiffness matrix
-            indices = np.array(
-                [[i, j] for j, i in product(range(ubasis.Nbfun),
-                                            range(vbasis.Nbfun))]
-            )
-
-            # split local stiffness matrix elements to threads
-            threads = [
-                Thread(
-                    target=self._threaded_kernel,
-                    args=(data, ix, ubasis.basis, vbasis.basis, wdict, dx)
-                ) for ix in np.array_split(indices, self.nthreads, axis=0)
-            ]
-
-            # start threads and wait for finishing
+            indices = np.array([[i, j] for (j, i) in product(range(ubasis.Nbfun), range(vbasis.Nbfun))])
+            threads = [Thread(target=self._threaded_kernel, args=(data, ix, ubasis.basis, vbasis.basis, wdict, dx)) for ix in np.array_split(indices, self.nthreads, axis=0)]
             for t in threads:
                 t.start()
             for t in threads:
                 t.join()
-
             data = data.flatten('C')
-
-        return data, rows, cols, (vbasis.N, ubasis.N)
+        return (data, rows, cols, (vbasis.N, ubasis.N))
 
     def coo_data(self, *args, **kwargs) -> COOData:
         return COOData(*self._assemble(*args, **kwargs))
@@ -146,10 +105,5 @@ class BilinearForm(Form):
 
     def _threaded_kernel(self, data, ix, ubasis, vbasis, wdict, dx):
         for ij in ix:
-            i, j = ij
-            data[j, i] = self._kernel(
-                ubasis[j],
-                vbasis[i],
-                wdict,
-                dx,
-            )
+            (i, j) = ij
+            data[j, i] = self._kernel(ubasis[j], vbasis[i], wdict, dx)

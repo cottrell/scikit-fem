@@ -1,11 +1,8 @@
 from typing import Optional, List, Type, Tuple
-
 import numpy as np
 from numpy import ndarray
-
 from ..refdom import Refdom
 from .discrete_field import DiscreteField
-
 
 class Element:
     """Evaluate finite element basis.
@@ -59,11 +56,7 @@ class Element:
         else:
             return 1 + 0 * tind
 
-    def gbasis(self,
-               mapping,
-               X: ndarray,
-               i: int,
-               tind: Optional[ndarray] = None) -> Tuple[DiscreteField, ...]:
+    def gbasis(self, mapping, X: ndarray, i: int, tind: Optional[ndarray]=None) -> Tuple[DiscreteField, ...]:
         """Evaluate the global basis functions, given local points ``X``.
 
         The global points corresponding to ``X`` are obtained through the
@@ -91,24 +84,18 @@ class Element:
             The global basis function evaluted at the quadrature points.
 
         """
-        raise NotImplementedError("Element must implement gbasis.")
+        raise NotImplementedError('Element must implement gbasis.')
 
     @classmethod
     def _index_error(cls):
-        raise ValueError("Index larger than the number of basis functions.")
+        raise ValueError('Index larger than the number of basis functions.')
 
     def _bfun_counts(self) -> ndarray:
         """Count number of nodal/edge/facet/interior basis functions."""
-        return np.array([self.nodal_dofs * self.refdom.nnodes,
-                         self.edge_dofs * self.refdom.nedges,
-                         self.facet_dofs * self.refdom.nfacets,
-                         self.interior_dofs])
+        return np.array([self.nodal_dofs * self.refdom.nnodes, self.edge_dofs * self.refdom.nedges, self.facet_dofs * self.refdom.nfacets, self.interior_dofs])
 
     def __mul__(self, other):
-
         from .element_composite import ElementComposite
-
         a = self.elems if isinstance(self, ElementComposite) else [self]
         b = other.elems if isinstance(other, ElementComposite) else [other]
-
         return ElementComposite(*a, *b)

@@ -1,8 +1,6 @@
 """Weak forms for elasticity."""
-
-from skfem.assembly import BilinearForm
-from skfem.helpers import ddot, trace, sym_grad, eye
-
+from ..assembly import BilinearForm
+from ..helpers import ddot, trace, sym_grad, eye
 
 def lame_parameters(E, nu):
     """Calculate the Lamé parameters from E and nu.
@@ -22,26 +20,20 @@ def lame_parameters(E, nu):
         The second Lamé parameter (mu)
 
     """
-    return (E * nu / ((1. + nu) * (1. - 2. * nu)),
-            E / (2. * (1. + nu)))
+    return (E * nu / ((1.0 + nu) * (1.0 - 2.0 * nu)), E / (2.0 * (1.0 + nu)))
 
-
-def linear_stress(Lambda=1., Mu=1.):
+def linear_stress(Lambda=1.0, Mu=1.0):
 
     def C(T):
         """Linear-elastic stress-strain relationship."""
-        return 2. * Mu * T + Lambda * eye(trace(T), T.shape[0])
-
+        return 2.0 * Mu * T + Lambda * eye(trace(T), T.shape[0])
     return C
 
-
-def linear_elasticity(Lambda=1., Mu=1.):
+def linear_elasticity(Lambda=1.0, Mu=1.0):
     """Weak form of the linear elasticity operator."""
-
     C = linear_stress(Lambda, Mu)
 
     @BilinearForm
     def weakform(u, v, w):
         return ddot(C(sym_grad(u)), sym_grad(v))
-
     return weakform

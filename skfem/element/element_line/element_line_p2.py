@@ -1,24 +1,18 @@
 import numpy as np
-
 from ..element_h1 import ElementH1
 from ...refdom import RefLine
 
-
 class ElementLineP2(ElementH1):
     """Piecewise quadratic element."""
-
     nodal_dofs = 1
     interior_dofs = 1
     maxdeg = 2
     dofnames = ['u', 'u']
-    doflocs = np.array([[0.],
-                        [1.],
-                        [.5]])
+    doflocs = np.array([[0.0], [1.0], [0.5]])
     refdom = RefLine
 
     def lbasis(self, X, i):
         x = X[0]
-
         if i == 0:
             phi = 1 - 3 * x + 2 * x ** 2
             dphi = np.array([-3 + 4 * x])
@@ -30,5 +24,4 @@ class ElementLineP2(ElementH1):
             dphi = np.array([4 - 8 * x])
         else:
             self._index_error()
-
-        return phi, dphi
+        return (phi, dphi)

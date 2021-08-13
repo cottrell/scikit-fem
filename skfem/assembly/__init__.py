@@ -1,4 +1,4 @@
-r"""This module performs the finite element assembly. The basic workflow is the
+"""This module performs the finite element assembly. The basic workflow is the
 following:
 
 1. Initialize :class:`~skfem.mesh.Mesh` and :class:`~skfem.element.Element`.
@@ -25,9 +25,9 @@ Mathematically the above forms are
 
 .. math::
 
-    a(u,v) = \int_\Omega u v \,\mathrm{d}x
-    \quad \mathrm{and} \quad
-    l(v) = \int_\Omega x^2v \,\mathrm{d}x.
+    a(u,v) = \\int_\\Omega u v \\,\\mathrm{d}x
+    \\quad \\mathrm{and} \\quad
+    l(v) = \\int_\\Omega x^2v \\,\\mathrm{d}x.
 
 4. Create the matrices/vectors using
    :meth:`~skfem.assembly.BilinearForm.assemble`.
@@ -43,43 +43,19 @@ matrix([[0.08333333, 0.04166667, 0.04166667, 0.        ],
 array([0.0162037 , 0.15046296, 0.06712963, 0.09953704])
 
 """
-
 from typing import Union
-
 from numpy import ndarray
-
 from scipy.sparse import csr_matrix
-
-from .basis import (Basis, CellBasis, FacetBasis, BoundaryFacetBasis,
-                    InteriorFacetBasis, MortarFacetBasis)
-from .basis import InteriorBasis, ExteriorFacetBasis  # backwards compatibility
+from .basis import Basis, CellBasis, FacetBasis, BoundaryFacetBasis, InteriorFacetBasis, MortarFacetBasis
+from .basis import InteriorBasis, ExteriorFacetBasis
 from .dofs import Dofs, DofsView
 from .form import Form, BilinearForm, LinearForm, Functional
 
-
-def asm(form: Form,
-        *args, **kwargs) -> Union[ndarray, csr_matrix]:
+def asm(form: Form, *args, **kwargs) -> Union[ndarray, csr_matrix]:
     """Perform finite element assembly.
 
     A shorthand for :meth:`skfem.assembly.Form.assemble`.
 
     """
     return form.assemble(*args, **kwargs)
-
-
-__all__ = [
-    "asm",
-    "Basis",
-    "CellBasis",
-    "FacetBasis",
-    "BoundaryFacetBasis",
-    "InteriorFacetBasis",
-    "MortarFacetBasis",
-    "Dofs",
-    "DofsView",
-    "BilinearForm",
-    "LinearForm",
-    "Functional",
-    "InteriorBasis",  # backwards compatibility
-    "ExteriorFacetBasis",  # backwards compatibility
-]
+__all__ = ['asm', 'Basis', 'CellBasis', 'FacetBasis', 'BoundaryFacetBasis', 'InteriorFacetBasis', 'MortarFacetBasis', 'Dofs', 'DofsView', 'BilinearForm', 'LinearForm', 'Functional', 'InteriorBasis', 'ExteriorFacetBasis']

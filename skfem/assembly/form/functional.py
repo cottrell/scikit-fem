@@ -1,11 +1,8 @@
 from typing import Dict, Optional, Any
-
 from numpy import ndarray
-
 from .form import Form, FormExtraParams
 from ..basis import Basis
 from ...element import DiscreteField
-
 
 class Functional(Form):
     """A functional for postprocessing finite element solution.
@@ -15,27 +12,17 @@ class Functional(Form):
 
     """
 
-    def _kernel(self,
-                w: Dict[str, DiscreteField],
-                dx: ndarray) -> ndarray:
+    def _kernel(self, w: Dict[str, DiscreteField], dx: ndarray) -> ndarray:
         if self.form is None:
-            raise Exception("Form function handle not defined.")
+            raise Exception('Form function handle not defined.')
         return (self.form(w) * dx).sum(-1)
 
-    def elemental(self,
-                  v: Basis,
-                  **kwargs) -> ndarray:
+    def elemental(self, v: Basis, **kwargs) -> ndarray:
         """Evaluate the functional elementwise."""
-        w = FormExtraParams({
-            **v.default_parameters(),
-            **self.dictify(kwargs),
-        })
+        w = FormExtraParams({**v.default_parameters(), **self.dictify(kwargs)})
         return self._kernel(w, v.dx)
 
-    def assemble(self,
-                 ubasis: Basis,
-                 vbasis: Optional[Basis] = None,
-                 **kwargs) -> Any:
+    def assemble(self, ubasis: Basis, vbasis: Optional[Basis]=None, **kwargs) -> Any:
         """Evaluate the functional to a scalar.
 
         Parameters

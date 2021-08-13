@@ -1,14 +1,10 @@
 from typing import Optional
-
 from numpy import ndarray
 
-
-class Mapping():
+class Mapping:
     """Base class for mappings between reference and global elements."""
 
-    def F(self,
-          X: ndarray,
-          tind: Optional[ndarray] = None) -> ndarray:
+    def F(self, X: ndarray, tind: Optional[ndarray]=None) -> ndarray:
         """Perform mapping from the reference element to global elements.
 
         Parameters
@@ -26,9 +22,7 @@ class Mapping():
         """
         raise NotImplementedError
 
-    def invF(self,
-             x: ndarray,
-             tind: Optional[ndarray] = None) -> ndarray:
+    def invF(self, x: ndarray, tind: Optional[ndarray]=None) -> ndarray:
         """Perform an inverse mapping from global elements to reference element.
 
         Parameters
@@ -46,9 +40,7 @@ class Mapping():
         """
         raise NotImplementedError
 
-    def G(self,
-          X: ndarray,
-          find: Optional[ndarray] = None) -> ndarray:
+    def G(self, X: ndarray, find: Optional[ndarray]=None) -> ndarray:
         """Perform a mapping from the reference facet to global facet.
 
         Parameters
@@ -66,9 +58,7 @@ class Mapping():
         """
         raise NotImplementedError
 
-    def detDG(self,
-              X: ndarray,
-              find: Optional[ndarray] = None) -> ndarray:
+    def detDG(self, X: ndarray, find: Optional[ndarray]=None) -> ndarray:
         """The jacobian determinant of G.
 
         Parameters
@@ -86,28 +76,18 @@ class Mapping():
         """
         raise NotImplementedError
 
-    def normals(self,
-                X: ndarray,
-                tind: ndarray,
-                find: ndarray,
-                t2f: ndarray) -> ndarray:
+    def normals(self, X: ndarray, tind: ndarray, find: ndarray, t2f: ndarray) -> ndarray:
         """Calculate normal vectors on element boundaries."""
         raise NotImplementedError
 
-    def DF(self,
-           X: ndarray,
-           tind: Optional[ndarray] = None):
+    def DF(self, X: ndarray, tind: Optional[ndarray]=None):
         """The jacobian of F."""
         raise NotImplementedError
 
-    def invDF(self,
-              X: ndarray,
-              tind: Optional[ndarray] = None):
+    def invDF(self, X: ndarray, tind: Optional[ndarray]=None):
         """The inverse of the jacobian of F."""
         raise NotImplementedError
 
-    def detDF(self,
-              X: ndarray,
-              tind: Optional[ndarray] = None):
+    def detDF(self, X: ndarray, tind: Optional[ndarray]=None):
         """The determinant of the jacobian of F."""
         raise NotImplementedError
